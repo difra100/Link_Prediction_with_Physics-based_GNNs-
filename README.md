@@ -1,7 +1,12 @@
 # Link Prediction with Physics-based GNNs
-### Repository's description
+### Repository's Content
 This repository contains the developement and code implementation for my Master's degree thesis.  
 The topic of my thesis concerns the design and development of a Physics-based GNN for link prediction in the Graph domain.  
+### Repository Description
+* node_class_test.ipynb : This is a notebook that contains some notes and also some preliminary implementation of actual code.
+* GRAFF.py : This python script contains the implementation for GRAFF, which is the Physics-based GNN.
+* 
+
 
 
 #### Thesis supervisors

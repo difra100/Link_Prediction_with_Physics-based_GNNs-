@@ -1,0 +1,36 @@
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+/home/peppe/miniconda3/envs/my_env/lib/python3.9/site-packages/pytorch_lightning/core/datamodule.py:469: LightningDeprecationWarning: DataModule.setup has already been called, so it will not be called again. In v1.6 this behavior will change to always call DataModule.setup.
+  rank_zero_deprecation(
+  | Name  | Type          | Params
+----------------------------------------
+0 | model | PhysicsGNN_NC | 109 K
+----------------------------------------
+109 K     Trainable params
+0         Non-trainable params
+109 K     Total params
+0.438     Total estimated model params size (MB)
+/home/peppe/miniconda3/envs/my_env/lib/python3.9/site-packages/pytorch_lightning/trainer/data_loading.py:132: UserWarning: The dataloader, val_dataloader 0, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 12 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+/home/peppe/miniconda3/envs/my_env/lib/python3.9/site-packages/pytorch_lightning/trainer/data_loading.py:132: UserWarning: The dataloader, train_dataloader, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 12 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+/home/peppe/miniconda3/envs/my_env/lib/python3.9/site-packages/pytorch_lightning/trainer/data_loading.py:432: UserWarning: The number of training samples (1) is smaller than the logging interval Trainer(log_every_n_steps=50). Set a lower value for log_every_n_steps if you want to see logs for the training epoch.
+  rank_zero_warn(
+/home/peppe/miniconda3/envs/my_env/lib/python3.9/site-packages/pytorch_lightning/loggers/wandb.py:341: UserWarning: There is a wandb run already in progress and newly created instances of `WandbLogger` will reuse this run. If this is not desired, call `wandb.finish()` before instantiating `WandbLogger`.
+  rank_zero_warn(
+Epoch 172:  50%|█████     | 1/2 [00:00<00:00, 104.50it/s, loss=1.31, v_num=xwnd, Loss on train=1.290, Accuracy on train=0.851, Loss on test=1.470, Accuracy on test=0.576]
+
+
+
+
+Epoch 457: 100%|██████████| 2/2 [00:00<00:00, 80.10it/s, loss=0.819, v_num=xwnd, Loss on train=0.807, Accuracy on train=0.920, Loss on test=1.230, Accuracy on test=0.678]
+
+
+Epoch 677:  50%|█████     | 1/2 [00:00<00:00, 78.32it/s, loss=0.555, v_num=xwnd, Loss on train=0.547, Accuracy on train=0.954, Loss on test=1.100, Accuracy on test=0.695]
+
+
+
+
+
+Epoch 999: 100%|██████████| 2/2 [00:00<00:00, 58.05it/s, loss=0.328, v_num=xwnd, Loss on train=0.324, Accuracy on train=0.954, Loss on test=0.977, Accuracy on test=0.712]

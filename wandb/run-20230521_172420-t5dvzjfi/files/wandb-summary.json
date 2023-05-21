@@ -1,0 +1,1 @@
+{"Loss on train": 0.011643148958683014, "Accuracy on train": 1.0, "Loss on test": 0.7061243653297424, "Accuracy on test": 0.7796609997749329, "epoch": 999, "trainer/global_step": 999, "_timestamp": 1684682704.1932201, "_runtime": 44.15357518196106, "_step": 999, "_wandb": {"runtime": 35}}

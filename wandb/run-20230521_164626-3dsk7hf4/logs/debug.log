@@ -1,0 +1,38 @@
+2023-05-21 16:46:26,025 INFO    MainThread:43108 [wandb_setup.py:_flush():68] Configure stats pid to 43108
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_setup.py:_flush():68] Loading settings from /home/peppe/.config/wandb/settings
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_setup.py:_flush():68] Loading settings from /home/peppe/Desktop/Università/magistrale/Thesis/Link_Prediction_with_Physics-based_GNNs-/wandb/settings
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program': '<python with no main file>'}
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:_log_setup():476] Logging user logs to /home/peppe/Desktop/Università/magistrale/Thesis/Link_Prediction_with_Physics-based_GNNs-/wandb/run-20230521_164626-3dsk7hf4/logs/debug.log
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:_log_setup():477] Logging internal logs to /home/peppe/Desktop/Università/magistrale/Thesis/Link_Prediction_with_Physics-based_GNNs-/wandb/run-20230521_164626-3dsk7hf4/logs/debug-internal.log
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:_jupyter_setup():426] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x7f4b3e080790>
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:init():516] calling init triggers
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:init():519] wandb.init called with sweep_config: {}
+config: {'batch_size': 183, 'learning rate': 0.001, 'weight decay': 0, 'Loss type': 'ce', 'N° Hidden layer': 2, 'Hidden dimension in GRAFF': 64, 'ODE step': 0.1, 'Dataset': 'Texas'}
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:init():569] starting backend
+2023-05-21 16:46:26,026 INFO    MainThread:43108 [wandb_init.py:init():573] setting up manager
+2023-05-21 16:46:26,031 INFO    MainThread:43108 [backend.py:_multiprocessing_setup():102] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2023-05-21 16:46:26,035 INFO    MainThread:43108 [wandb_init.py:init():580] backend started and connected
+2023-05-21 16:46:26,037 INFO    MainThread:43108 [wandb_run.py:_label_probe_notebook():1116] probe notebook
+2023-05-21 16:46:26,037 INFO    MainThread:43108 [wandb_run.py:_label_probe_notebook():1126] Unable to probe notebook: 'NoneType' object has no attribute 'get'
+2023-05-21 16:46:26,037 INFO    MainThread:43108 [wandb_init.py:init():658] updated telemetry
+2023-05-21 16:46:26,099 INFO    MainThread:43108 [wandb_init.py:init():693] communicating run to backend with 60 second timeout
+2023-05-21 16:46:27,725 INFO    MainThread:43108 [wandb_run.py:_on_init():2006] communicating current version
+2023-05-21 16:46:27,909 INFO    MainThread:43108 [wandb_run.py:_on_init():2010] got version response upgrade_message: "wandb version 0.15.3 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2023-05-21 16:46:27,909 INFO    MainThread:43108 [wandb_init.py:init():728] starting run threads in backend
+2023-05-21 16:46:32,938 INFO    MainThread:43108 [wandb_run.py:_console_start():1986] atexit reg
+2023-05-21 16:46:32,938 INFO    MainThread:43108 [wandb_run.py:_redirect():1844] redirect: SettingsConsole.WRAP_RAW
+2023-05-21 16:46:32,939 INFO    MainThread:43108 [wandb_run.py:_redirect():1909] Wrapping output streams.
+2023-05-21 16:46:32,939 INFO    MainThread:43108 [wandb_run.py:_redirect():1931] Redirects installed.
+2023-05-21 16:46:32,939 INFO    MainThread:43108 [wandb_init.py:init():765] run started, returning control to user process
+2023-05-21 16:46:35,607 INFO    MainThread:43108 [wandb_run.py:_finish():1753] finishing run deepl_wizards/Link Prediction with PBGNN/3dsk7hf4
+2023-05-21 16:46:35,661 INFO    MainThread:43108 [jupyter.py:save_history():448] not saving jupyter history
+2023-05-21 16:46:35,661 INFO    MainThread:43108 [jupyter.py:save_ipynb():378] not saving jupyter notebook
+2023-05-21 16:46:35,661 INFO    MainThread:43108 [wandb_init.py:_jupyter_teardown():408] cleaning up jupyter logic
+2023-05-21 16:46:35,661 INFO    MainThread:43108 [wandb_run.py:_atexit_cleanup():1955] got exitcode: 0
+2023-05-21 16:46:35,661 INFO    MainThread:43108 [wandb_run.py:_restore():1938] restore
+2023-05-21 16:46:35,662 INFO    MainThread:43108 [wandb_run.py:_restore():1944] restore done
+2023-05-21 16:46:42,738 INFO    MainThread:43108 [wandb_run.py:_footer_history_summary_info():3408] rendering history
+2023-05-21 16:46:42,739 INFO    MainThread:43108 [wandb_run.py:_footer_history_summary_info():3440] rendering summary
+2023-05-21 16:46:42,745 INFO    MainThread:43108 [wandb_run.py:_footer_sync_info():3364] logging synced files
