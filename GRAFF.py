@@ -31,10 +31,11 @@ class PairwiseParametrization(torch.nn.Module):
         return W0 + w_diag
 
 class External_W(nn.Module):
-    def __init__(self, input_dim):
+    def __init__(self, input_dim, device = 'cpu'):
         super().__init__()
         self.w = torch.nn.Parameter(torch.empty((1, input_dim)))
         self.reset_parameters()
+        self.to(device)
     
     def reset_parameters(self):
         torch.nn.init.normal_(self.w)
@@ -45,11 +46,12 @@ class External_W(nn.Module):
 
 
 class Source_b(nn.Module):
-    def __init__(self):
+    def __init__(self, device = 'cpu'):
         super().__init__()
         self.beta = torch.nn.Parameter(torch.empty(1))
-
+     
         self.reset_parameters()
+        self.to(device)
 
     def reset_parameters(self):
         torch.nn.init.normal_(self.beta)
@@ -61,7 +63,7 @@ class Source_b(nn.Module):
 
 
 class PairwiseInteraction_w(nn.Module):
-    def __init__(self, input_dim, symmetry_type='1'):
+    def __init__(self, input_dim, symmetry_type='1', device = 'cpu'):
         super().__init__()
         self.W = torch.nn.Linear(input_dim + 2, input_dim)
 
@@ -73,6 +75,7 @@ class PairwiseInteraction_w(nn.Module):
         parametrize.register_parametrization(
             self.W, 'weight', symmetry, unsafe=True)
         self.reset_parameters()
+        self.to(device)
         
     def reset_parameters(self):
         self.W.reset_parameters()
@@ -82,14 +85,15 @@ class PairwiseInteraction_w(nn.Module):
 
 
 class GRAFFConv(MessagePassing):
-    def __init__(self, input_dim, symmetry_type='1', self_loops=True):
+    def __init__(self, input_dim, symmetry_type='1', self_loops=True, device = 'cpu'):
         super().__init__(aggr='add')
         self.in_dim = input_dim
         self.self_loops = self_loops
-        self.external_w = External_W(self.in_dim)
-        self.beta = Source_b()
+        self.external_w = External_W(self.in_dim, device=device)
+        self.beta = Source_b(device = device)
         self.pairwise_W = PairwiseInteraction_w(
-            self.in_dim, symmetry_type=symmetry_type)
+            self.in_dim, symmetry_type=symmetry_type, device=device)
+   
 
     def forward(self, x, edge_index, x0):
 
@@ -124,16 +128,21 @@ class GRAFFConv(MessagePassing):
 
 
 class PhysicsGNN_NC(nn.Module):
-    def __init__(self, dataset, hidden_dim, num_layers, step = 0.1, symmetry_type='1', self_loops=False):
+    def __init__(self, dataset, hidden_dim, num_layers, step = 0.1, symmetry_type='1', self_loops=False, device = 'cpu'):
         super().__init__()
 
         self.enc = torch.nn.Linear(dataset.num_features, hidden_dim)
         self.dec = torch.nn.Linear(hidden_dim, dataset.num_classes)
 
+
         self.layers = [GRAFFConv(hidden_dim, symmetry_type=symmetry_type,
-                            self_loops=self_loops) for i in range(num_layers)]
+                            self_loops=self_loops, device = device) for i in range(num_layers)]
+        
+
+        
         self.step = step
         self.reset_parameters()
+        self.to(device)
 
     def reset_parameters(self):
         self.enc.reset_parameters()
