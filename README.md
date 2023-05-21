@@ -5,7 +5,8 @@ The topic of my thesis concerns the design and development of a Physics-based GN
 ### Repository Description
 * node_class_test.ipynb : This is a notebook that contains some notes and also some preliminary implementation of actual code.
 * GRAFF.py : This python script contains the implementation for GRAFF, which is the Physics-based GNN.
-* 
+* Experiments.ipynb : This notebook contains the pytorch-lightning code of the experiments.
+* config.py : The hyperparameters and other important variable are set in this script.
 
 
 
