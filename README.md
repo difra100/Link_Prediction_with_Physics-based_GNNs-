@@ -3,10 +3,17 @@
 This repository contains the developement and code implementation for my Master's degree thesis.  
 The topic of my thesis concerns the design and development of a Physics-based GNN for link prediction in the Graph domain.  
 ### Repository Description
-* node_class_test.ipynb : This is a notebook that contains some notes and also some preliminary implementation of actual code.
-* GRAFF.py : This python script contains the implementation for GRAFF, which is the Physics-based GNN.
-* Experiments.ipynb : This notebook contains the pytorch-lightning code of the experiments.
-* config.py : The hyperparameters and other important variable are set in this script.
+-- path: datasets
+-- src
+    - link_prediction
+      - config.py : Hyperparameters and other important variables for link prediction experiments
+      - link_pred_exps.ipynb : Notebook for the link prediction experiments.
+    - node_classification
+      - config.py : Hyperparameters and other important variables for node classification experiments
+      - node_class_exps.ipynb : Notebook for the node classification experiments.
+      - node_class_test.ipynb : Notebook that contains some notes and also some preliminary implementation for the node classifcation experiments.
+    - GRAFF.py : Python script containing the implementation of GRAFF, which is the Physics-based GNN.
+
 
 
 
