@@ -1,7 +1,7 @@
 import wandb
 from torch_geometric.datasets import WebKB, Planetoid, WikipediaNetwork
 # WebKB: (Texas, Wisconsin, Cornell); Planetoid: (Citeseer, Pubmed, Cora); WikipediaNetwork: (Squirrel, Chameleon)
-
+print("Node classification features initialized.....")
 
 wb = True
 project_name = 'Link Prediction with PBGNN'
