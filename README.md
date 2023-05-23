@@ -7,7 +7,7 @@ The topic of my thesis concerns the design and development of a Physics-based GN
 - **path/**   
   - **files for dataset**  
 - **src/**
-    - **link_prediction/**  
+    - **link_prediction/**  (WORK IN PROGRESS)
       - **config.py** : Hyperparameters and other important variables for link prediction experiments  
       - **link_pred_exps.ipynb** : Notebook for the link prediction experiments.  
     - **node_classification/**  
