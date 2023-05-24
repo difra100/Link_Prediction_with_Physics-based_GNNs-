@@ -14,18 +14,18 @@ dataset_diz = {
 }
 
 
-epochs = 15000
+epochs = 5000
 dataset_name = 'Cora'
 dataset = dataset_diz[dataset_name]
 
 
 batch_size = dataset.x.shape[0]
-lr = 1e-5
-wd = 1e-6
+lr = 1e-3
+wd = 5e-5
 loss_type = 'nll'
-num_layers = 3
-hidden_dim = 256
-step = 0.1
+num_layers = 2
+hidden_dim = 64
+step = 0.25
 
 hyperparameters = {'batch_size': batch_size,
                    'learning rate': lr,

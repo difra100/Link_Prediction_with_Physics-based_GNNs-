@@ -65,7 +65,7 @@ class Source_b(nn.Module):
 class PairwiseInteraction_w(nn.Module):
     def __init__(self, input_dim, symmetry_type='1', device = 'cpu'):
         super().__init__()
-        self.W = torch.nn.Linear(input_dim + 2, input_dim)
+        self.W = torch.nn.Linear(input_dim + 2, input_dim, bias = False)
 
         if symmetry_type == '1':
             symmetry = PairwiseParametrization()
@@ -85,14 +85,13 @@ class PairwiseInteraction_w(nn.Module):
 
 
 class GRAFFConv(MessagePassing):
-    def __init__(self, input_dim, symmetry_type='1', self_loops=True, device = 'cpu'):
+    def __init__(self, external_w, source_b, pairwise_w, self_loops=True):
         super().__init__(aggr='add')
-        self.in_dim = input_dim
+
         self.self_loops = self_loops
-        self.external_w = External_W(self.in_dim, device=device)
-        self.beta = Source_b(device = device)
-        self.pairwise_W = PairwiseInteraction_w(
-            self.in_dim, symmetry_type=symmetry_type, device=device)
+        self.external_w = external_w #External_W(self.in_dim, device=device)
+        self.beta = source_b #Source_b(device = device)
+        self.pairwise_W = pairwise_w #PairwiseInteraction_w(self.in_dim, symmetry_type=symmetry_type, device=device)
    
 
     def forward(self, x, edge_index, x0):
@@ -106,17 +105,17 @@ class GRAFFConv(MessagePassing):
 
         out = self.propagate(edge_index, x=out_p)
 
-        out = out - (self.external_w(x) + self.beta(x0))
+        out = out - self.external_w(x) + self.beta(x0)
 
         return out
 
-    def message(self, x_i, edge_index, x):
+    def message(self, x_j, edge_index, x):
         # Does we need the degree of the row or from the columns?
         # x_i are the columns indices, whereas x_j are the row indices
         row, col = edge_index
 
         # Degree is specified by the row (outgoing edges)
-        deg_matrix = degree(row, num_nodes=x.shape[0], dtype=x.dtype)
+        deg_matrix = degree(col, num_nodes=x.shape[0], dtype=x.dtype)
         deg_inv = deg_matrix.pow(-0.5)
         
         deg_inv[deg_inv == float('inf')] = 0
@@ -124,22 +123,24 @@ class GRAFFConv(MessagePassing):
         denom_degree = deg_inv[row]*deg_inv[col]
 
         # Each row of denom_degree multiplies (element-wise) the rows of x_j
-        return denom_degree.unsqueeze(-1) * x_i
+        return denom_degree.unsqueeze(-1) * x_j
+
 
 
 class PhysicsGNN_NC(nn.Module):
     def __init__(self, dataset, hidden_dim, num_layers, step = 0.1, symmetry_type='1', self_loops=False, device = 'cpu'):
         super().__init__()
 
-        self.enc = torch.nn.Linear(dataset.num_features, hidden_dim)
-        self.dec = torch.nn.Linear(hidden_dim, dataset.num_classes)
+        self.enc = torch.nn.Linear(dataset.num_features, hidden_dim, bias = False)
+        self.dec = torch.nn.Linear(hidden_dim, dataset.num_classes, bias = False)
 
+        self.external_w = External_W(hidden_dim, device=device)
+        self.source_b = Source_b(device = device)
+        self.pairwise_w = PairwiseInteraction_w(hidden_dim, symmetry_type=symmetry_type, device=device)
 
-        self.layers = [GRAFFConv(hidden_dim, symmetry_type=symmetry_type,
-                            self_loops=self_loops, device = device) for i in range(num_layers)]
-        
-
-        
+        self.layers = [GRAFFConv(self.external_w, self.source_b, self.pairwise_w,
+                            self_loops=self_loops) for i in range(num_layers)]
+             
         self.step = step
         self.reset_parameters()
         self.to(device)
@@ -147,8 +148,9 @@ class PhysicsGNN_NC(nn.Module):
     def reset_parameters(self):
         self.enc.reset_parameters()
         self.dec.reset_parameters()
-        for layer in self.layers:
-            layer.reset_parameters()
+        self.external_w.reset_parameters()
+        self.source_b.reset_parameters()
+        self.pairwise_w.reset_parameters()
 
 
         
@@ -167,7 +169,8 @@ class PhysicsGNN_NC(nn.Module):
         output = self.dec(x)
 
         return output
-        
+
+
             
     
         
