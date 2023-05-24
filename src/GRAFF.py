@@ -189,9 +189,10 @@ class LinkPredictor(nn.Module):
         self.to(device)
              
     def reset_parameters(self):
-        for layer in self.layers:
-            layer.reset_parameters()
-        
+        if self.num_layers!= 0:
+            for layer in self.layers:
+                layer.reset_parameters()
+            
     def forward(self, x_i, x_j, training = False):
         
         out = x_i * x_j 

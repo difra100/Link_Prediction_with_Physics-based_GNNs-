@@ -15,7 +15,7 @@ dataset_diz = {
 
 
 epochs = 5000
-dataset_name = 'Cora'
+dataset_name = 'Texas'
 dataset = dataset_diz[dataset_name]
 
 
