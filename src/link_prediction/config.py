@@ -22,15 +22,21 @@ dataset = dataset_diz[dataset_name]
 batch_size = dataset.x.shape[0]
 lr = 1e-3
 wd = 5e-5
-loss_type = 'nll'
 num_layers = 2
 hidden_dim = 64
 step = 0.25
+output_dim = 64
+mlp_layer = 2
+link_bias = False
+dropout = 0.1
 
 hyperparameters = {'batch_size': batch_size,
                    'learning rate': lr,
                    'weight decay': wd,
-                   'Loss type': loss_type,
+                   'output_dim': output_dim,
+                   'mlp_layers': mlp_layer,
+                   'link_bias': link_bias,
+                   'dropout level': dropout,
                    'N° Hidden layer': num_layers,
                    'Hidden dimension in GRAFF': hidden_dim,
                    'ODE step': step,
@@ -39,8 +45,10 @@ hyperparameters = {'batch_size': batch_size,
 sweep_config = {
     'method': 'random'
 }
-sweep_config['metric'] = {'name': 'Accuracy on test',
-                          'goal': 'maximize'}
+sweep_config['metric'] = {'name': 'HR@100 on test',
+                          'goal': 'maximize',
+                          'name': 'Loss on test',
+                          'goal': 'minimize'}
 
 parameters_dict = {
     'lr': {
@@ -58,8 +66,17 @@ parameters_dict = {
     'num_layers': {
         'values': [1, 2, 3, 4]
     },
-    'loss_type': {
-        'values': ['ce', 'nll']
+    'output_dim': {
+        'values': [16, 32, 64]
+    },
+    'mlp_layer': {
+        'values': [0, 1, 2, 3]
+    },
+    'link_bias': {
+       'values': [True, False]
+    },
+    'dropout': {
+        'values': [0, 0.2, 0.4]
     }
 }
 
