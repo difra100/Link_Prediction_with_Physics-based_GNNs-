@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch_geometric
 from torch_geometric.nn import MessagePassing
 from torch_geometric.utils import add_self_loops, degree, homophily
+from torch_geometric.utils import negative_sampling
 
 class Symmetric(torch.nn.Module):
     def forward(self, w):
@@ -177,15 +178,20 @@ class LinkPredictor(nn.Module):
         super().__init__()
         
         self.num_layers = num_layers
+        layers = []
         if self.num_layers != 0:
-            layers = []
+            
             layers.append(nn.Linear(input_dim, output_dim, bias = bias))
             for layer in range(self.num_layers):
                 layers.append(nn.Linear(output_dim, output_dim, bias = bias))
-            layers.append(nn.Linear(output_dim, 1, bias = bias))
         
-            self.layers = nn.Sequential(*layers)
-            self.dropout = dropout
+            layers.append(nn.Linear(output_dim, 1, bias = bias))    
+        else:
+            layers.append(nn.Linear(input_dim, 1, bias = bias))    
+
+    
+        self.layers = nn.Sequential(*layers)
+        self.dropout = dropout
         self.to(device)
              
     def reset_parameters(self):
@@ -197,12 +203,12 @@ class LinkPredictor(nn.Module):
         
         out = x_i * x_j 
         if self.num_layers != 0:
-            for layer in self.layers:
-                out = layer(out)
+            for layer_idx in range(len(self.layers)-1):
+                out = self.layers[layer_idx](out)
                 out = F.relu(out)
                 out = F.dropout(out, p = self.dropout, training = training)
-        out = out.sum(dim = -1)
-      
+        out = self.layers[-1](out)
+     
         return torch.sigmoid(out)
     
 
@@ -256,10 +262,16 @@ class PhysicsGNN_LP(nn.Module):
         neg_edge = data.neg_edges.clone()
         pos_pred = self.link_pred(
             x[pos_edge[0]], x[pos_edge[1]], training=train)
+        
         neg_pred = self.link_pred(
             x[neg_edge[0]], x[neg_edge[1]], training=train)
 
-        return pos_pred, neg_pred
+        # Compute fake edges for the accuracy  
+        negs_edges = negative_sampling(data.edge_index, num_neg_samples = 300000)
+
+        negatives = self.link_pred(x[negs_edges[0]], x[negs_edges[1]], training = train)
+
+        return pos_pred, neg_pred, negatives
 
 
 

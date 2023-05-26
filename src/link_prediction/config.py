@@ -15,7 +15,7 @@ dataset_diz = {
 
 
 epochs = 5000
-dataset_name = 'Texas'
+dataset_name = 'Cora'
 dataset = dataset_diz[dataset_name]
 
 
@@ -23,12 +23,12 @@ batch_size = dataset.x.shape[0]
 lr = 1e-3
 wd = 5e-5
 num_layers = 2
-hidden_dim = 64
+hidden_dim = 512
 step = 0.25
 output_dim = 64
-mlp_layer = 2
+mlp_layer = 0
 link_bias = False
-dropout = 0.1
+dropout = 0.4
 
 hyperparameters = {'batch_size': batch_size,
                    'learning rate': lr,
@@ -76,7 +76,7 @@ parameters_dict = {
        'values': [True, False]
     },
     'dropout': {
-        'values': [0, 0.2, 0.4]
+        'values': [0.4, 0.5, 0.6]
     }
 }
 
