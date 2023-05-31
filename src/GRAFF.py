@@ -193,11 +193,11 @@ class LinkPredictor(nn.Module):
         self.layers = nn.Sequential(*layers)
         self.dropout = dropout
         self.to(device)
+        self.reset_parameters()
              
     def reset_parameters(self):
-        if self.num_layers!= 0:
-            for layer in self.layers:
-                layer.reset_parameters()
+        for layer in self.layers:
+            layer.reset_parameters()
             
     def forward(self, x_i, x_j, training = False):
         
@@ -208,12 +208,45 @@ class LinkPredictor(nn.Module):
                 out = F.relu(out)
                 out = F.dropout(out, p = self.dropout, training = training)
         out = self.layers[-1](out)
-     
-        return torch.sigmoid(out)
+
+        out = torch.sigmoid(out)
+
+        return out
+
+
+
+# class LinkPredictor(nn.Module):
+#     def __init__(self, in_channels, hidden_channels, out_channels, num_layers,
+#                  dropout):
+#         super(LinkPredictor, self).__init__()
+
+#         # Create linear layers
+#         self.lins = nn.ModuleList()
+#         self.lins.append(nn.Linear(in_channels, hidden_channels))
+#         for _ in range(num_layers - 2):
+#             self.lins.append(nn.Linear(hidden_channels, hidden_channels))
+#         self.lins.append(nn.Linear(hidden_channels, out_channels))
+
+#         self.dropout = dropout
+
+#     def reset_parameters(self):
+#         for lin in self.lins:
+#             lin.reset_parameters()
+
+#     def forward(self, x_i, x_j, training = False):
+#         # x_i and x_j are both of shape (E, D)
+#         x = x_i * x_j
+#         for lin in self.lins[:-1]:
+#             x = lin(x)
+#             x = F.relu(x)
+#             x = F.dropout(x, p=self.dropout, training=training)
+#         x = self.lins[-1](x)
+#         return torch.sigmoid(x)
+
     
 
 class PhysicsGNN_LP(nn.Module):
-    def __init__(self, dataset, hidden_dim, output_dim, num_layers, num_layers_mlp, link_bias, dropout, step=0.1, symmetry_type='1', self_loops=False, device='cpu'):
+    def __init__(self, dataset, hidden_dim, num_layers, step=0.1, symmetry_type='1', self_loops=False, device='cpu'):
         super().__init__()
 
         self.enc = torch.nn.Linear(
@@ -228,8 +261,7 @@ class PhysicsGNN_LP(nn.Module):
                                  self_loops=self_loops) for i in range(num_layers)]
 
         self.step = step
-        self.link_pred = LinkPredictor(
-            hidden_dim, output_dim, num_layers_mlp, link_bias, dropout, device = device)
+        
         self.reset_parameters()
         self.to(device)
 
@@ -238,42 +270,62 @@ class PhysicsGNN_LP(nn.Module):
         self.external_w.reset_parameters()
         self.source_b.reset_parameters()
         self.pairwise_w.reset_parameters()
-        self.link_pred.reset_parameters()
 
-    def forward(self, data, train=True):
 
-        if train:
-            x, edge_index = data.x.clone(), data.pos_forward_pass.clone()
-        else:
-            x, edge_index = data.x.clone(), data.edge_index.clone()
+    def forward(self, data):
+
+        x, edge_index = data.x.clone(), data.edge_index.clone()
+        
 
         x = enc_out = self.enc(x)
 
         x0 = enc_out.clone()
+        
         for layer in self.layers:
 
             x = x + self.step*F.relu(layer(x, edge_index, x0))
 
-        if train:
-            pos_edge = data.pos_masked_edges.clone()
-        else:
-            pos_edge = data.edge_label_index.clone()
+        return x
+     
 
-        neg_edge = data.neg_edges.clone()
-        pos_pred = self.link_pred(
-            x[pos_edge[0]], x[pos_edge[1]], training=train)
-        
-        neg_pred = self.link_pred(
-            x[neg_edge[0]], x[neg_edge[1]], training=train)
+# class GNNStack(torch.nn.Module):
+#     def __init__(self, input_dim, hidden_dim, output_dim, num_layers, dropout, emb=False):
+#         super(GNNStack, self).__init__()
+#         conv_model = torch_geometric.nn.SAGEConv
 
-        # Compute fake edges for the accuracy  
-        negs_edges = negative_sampling(data.edge_index, num_neg_samples = 300000)
+#         self.convs = nn.ModuleList()
+#         self.convs.append(conv_model(input_dim, hidden_dim))
+#         self.dropout = dropout
+#         self.num_layers = num_layers
+#         self.emb = emb
 
-        negatives = self.link_pred(x[negs_edges[0]], x[negs_edges[1]], training = train)
+#         # Create num_layers GraphSAGE convs
+#         assert (self.num_layers >= 1), 'Number of layers is not >=1'
+#         for l in range(self.num_layers - 1):
+#             self.convs.append(conv_model(hidden_dim, hidden_dim))
 
-        return pos_pred, neg_pred, negatives
+#         # post-message-passing processing 
+#         self.post_mp = nn.Sequential(
+#             nn.Linear(hidden_dim, hidden_dim), nn.Dropout(self.dropout),
+#             nn.Linear(hidden_dim, output_dim))
 
+#     def forward(self, data):
 
+#         x, edge_index = data.x, data.edge_index
+
+#         for i in range(self.num_layers):
+#             x = self.convs[i](x, edge_index)
+#             x = F.relu(x)
+#             x = F.dropout(x, p=self.dropout, training=self.training)
+
+#         x = self.post_mp(x)
+
+#         # Return final layer of embeddings if specified
+#         if self.emb:
+#             return x
+
+#         # Else return class probabilities
+#         return F.log_softmax(x, dim=1)
 
             
     

@@ -20,15 +20,15 @@ dataset = dataset_diz[dataset_name]
 
 
 batch_size = dataset.x.shape[0]
-lr = 1e-3
-wd = 5e-5
-num_layers = 2
-hidden_dim = 512
+lr = 0.01
+wd = 0.01
+num_layers = 3
+hidden_dim = 1024
 step = 0.25
-output_dim = 64
-mlp_layer = 0
+output_dim = 32
+mlp_layer = 2
 link_bias = False
-dropout = 0.4
+dropout = 0.3
 
 hyperparameters = {'batch_size': batch_size,
                    'learning rate': lr,
@@ -47,24 +47,23 @@ sweep_config = {
 }
 sweep_config['metric'] = {'name': 'HR@100 on test',
                           'goal': 'maximize',
-                          'name': 'Loss on test',
-                          'goal': 'minimize'}
+                         }
 
 parameters_dict = {
     'lr': {
-        'values': [1e-3, 1e-4, 1e-5]
+        'values': [1e-2, 1e-3, 1e-4]
     },
     'hidden_dim': {
         'values': [32, 64, 128, 256, 512, 1024]
     },
     'wd': {
-        'values': [0, 1e-2, 1e-4, 1e-6]
+        'values': [0, 1e-2, 1e-3, 1e-6]
     },
     'step': {
-        'values': [0.1, 0.2, 0.3, 0.4, 0.5]
+        'values': [0.1, 0.2, 0.3]
     },
     'num_layers': {
-        'values': [1, 2, 3, 4]
+        'values': [1, 2, 3]
     },
     'output_dim': {
         'values': [16, 32, 64]
@@ -76,9 +75,13 @@ parameters_dict = {
        'values': [True, False]
     },
     'dropout': {
-        'values': [0.4, 0.5, 0.6]
+        'values': [0, 0.2, 0.3, 0.4, 0.5]
     }
 }
+
+
+
+
 
 
 
