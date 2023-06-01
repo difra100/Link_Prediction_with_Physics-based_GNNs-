@@ -26,7 +26,7 @@ num_layers = 3
 hidden_dim = 128
 step = 0.25
 output_dim = 32
-mlp_layer = 2
+mlp_layer = 0
 link_bias = False
 dropout = 0.3
 
@@ -54,7 +54,7 @@ parameters_dict = {
         'values': [1e-2, 1e-3, 1e-4]
     },
     'hidden_dim': {
-        'values': [32, 64, 128, 256, 512, 1024]
+        'values': [32, 64, 128, 256]
     },
     'wd': {
         'values': [0, 1e-2, 1e-3, 1e-6]
@@ -75,7 +75,7 @@ parameters_dict = {
        'values': [True, False]
     },
     'dropout': {
-        'values': [0, 0.2, 0.3, 0.4, 0.5]
+        'values': [0, 0.2, 0.3, 0.4]
     }
 }
 
