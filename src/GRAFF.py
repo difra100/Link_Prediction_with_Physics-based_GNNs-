@@ -173,75 +173,75 @@ class PhysicsGNN_NC(nn.Module):
     
 
 
-class LinkPredictor(nn.Module):
-    def __init__(self, input_dim, output_dim, num_layers = 0, bias = False, dropout= 0, device = 'cpu'):
-        super().__init__()
+# class LinkPredictor(nn.Module):
+#     def __init__(self, input_dim, output_dim, num_layers = 0, bias = False, dropout= 0, device = 'cpu'):
+#         super().__init__()
         
-        self.num_layers = num_layers
-        layers = []
-        if self.num_layers != 0:
+#         self.num_layers = num_layers
+#         layers = []
+#         if self.num_layers != 0:
             
-            layers.append(nn.Linear(input_dim, output_dim, bias = bias))
-            for layer in range(self.num_layers):
-                layers.append(nn.Linear(output_dim, output_dim, bias = bias))
+#             layers.append(nn.Linear(input_dim, output_dim, bias = bias))
+#             for layer in range(self.num_layers):
+#                 layers.append(nn.Linear(output_dim, output_dim, bias = bias))
         
-            layers.append(nn.Linear(output_dim, 1, bias = bias))    
-        else:
-            layers.append(nn.Linear(input_dim, 1, bias = bias))    
+#             layers.append(nn.Linear(output_dim, 1, bias = bias))    
+#         else:
+#             layers.append(nn.Linear(input_dim, 1, bias = bias))    
 
     
-        self.layers = nn.Sequential(*layers)
-        self.dropout = dropout
-        self.to(device)
-        self.reset_parameters()
-             
-    def reset_parameters(self):
-        for layer in self.layers:
-            layer.reset_parameters()
-            
-    def forward(self, x_i, x_j, training = False):
-        
-        out = x_i * x_j 
-        if self.num_layers != 0:
-            for layer_idx in range(len(self.layers)-1):
-                out = self.layers[layer_idx](out)
-                out = F.relu(out)
-                out = F.dropout(out, p = self.dropout, training = training)
-        out = self.layers[-1](out)
-
-        out = torch.sigmoid(out)
-
-        return out
-
-
-
-# class LinkPredictor(nn.Module):
-#     def __init__(self, in_channels, hidden_channels, out_channels, num_layers,
-#                  dropout):
-#         super(LinkPredictor, self).__init__()
-
-#         # Create linear layers
-#         self.lins = nn.ModuleList()
-#         self.lins.append(nn.Linear(in_channels, hidden_channels))
-#         for _ in range(num_layers - 2):
-#             self.lins.append(nn.Linear(hidden_channels, hidden_channels))
-#         self.lins.append(nn.Linear(hidden_channels, out_channels))
-
+#         self.layers = nn.Sequential(*layers)
 #         self.dropout = dropout
-
+#         self.to(device)
+#         self.reset_parameters()
+             
 #     def reset_parameters(self):
-#         for lin in self.lins:
-#             lin.reset_parameters()
-
+#         for layer in self.layers:
+#             layer.reset_parameters()
+            
 #     def forward(self, x_i, x_j, training = False):
-#         # x_i and x_j are both of shape (E, D)
-#         x = x_i * x_j
-#         for lin in self.lins[:-1]:
-#             x = lin(x)
-#             x = F.relu(x)
-#             x = F.dropout(x, p=self.dropout, training=training)
-#         x = self.lins[-1](x)
-#         return torch.sigmoid(x)
+        
+#         out = x_i * x_j 
+#         if self.num_layers != 0:
+#             for layer_idx in range(len(self.layers)-1):
+#                 out = self.layers[layer_idx](out)
+#                 out = F.relu(out)
+#                 out = F.dropout(out, p = self.dropout, training = training)
+#         out = self.layers[-1](out)
+
+#         out = torch.sigmoid(out)
+
+#         return out
+
+
+
+class LinkPredictor(nn.Module):
+    def __init__(self, in_channels, hidden_channels, out_channels, num_layers,
+                 dropout):
+        super(LinkPredictor, self).__init__()
+
+        # Create linear layers
+        self.lins = nn.ModuleList()
+        self.lins.append(nn.Linear(in_channels, hidden_channels))
+        for _ in range(num_layers - 2):
+            self.lins.append(nn.Linear(hidden_channels, hidden_channels))
+        self.lins.append(nn.Linear(hidden_channels, out_channels))
+
+        self.dropout = dropout
+
+    def reset_parameters(self):
+        for lin in self.lins:
+            lin.reset_parameters()
+
+    def forward(self, x_i, x_j, training = False):
+        # x_i and x_j are both of shape (E, D)
+        x = x_i * x_j
+        for lin in self.lins[:-1]:
+            x = lin(x)
+            x = F.relu(x)
+            x = F.dropout(x, p=self.dropout, training=training)
+        x = self.lins[-1](x)
+        return torch.sigmoid(x)
 
     
 

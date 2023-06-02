@@ -9,22 +9,22 @@ project_name = 'Link Prediction with PBGNN'
 
 
 dataset_diz = {
-    'Texas': WebKB(root='/tmp/Texas', name='Texas'),
+    'Texas': WebKB(root='/tmp/Texas', name='Texas'), # Texas is solved in Link prediction.
     'Cora': Planetoid(root='/tmp/Cora', name='Cora', split='Geom-GCN')
 }
 
 
 epochs = 5000
-dataset_name = 'Cora'
+dataset_name = 'Texas'
 dataset = dataset_diz[dataset_name]
 
 
 batch_size = dataset.x.shape[0]
-lr = 0.01
-wd = 0.01
-num_layers = 3
-hidden_dim = 128
-step = 0.25
+lr = 3e-3
+wd = 0
+num_layers = 2
+hidden_dim = 256
+step = 0.1
 output_dim = 32
 mlp_layer = 0
 link_bias = False
@@ -79,6 +79,36 @@ parameters_dict = {
     }
 }
 
+
+# parameters_dict = {
+#     'lr': {
+#         'values': [1e-2]
+#     },
+#     'hidden_dim': {
+#         'values': [32, 64, 128, 256]
+#     },
+#     'wd': {
+#         'values': [1e-3]
+#     },
+#     'step': {
+#         'values': [0.1]
+#     },
+#     'num_layers': {
+#         'values': [2]
+#     },
+#     'output_dim': {
+#         'values': [32]
+#     },
+#     'mlp_layer': {
+#         'values': [0, 1, 2]
+#     },
+#     'link_bias': {
+#        'values': [True]
+#     },
+#     'dropout': {
+#         'values': [0.2, 0.3]
+#     }
+# }
 
 
 
