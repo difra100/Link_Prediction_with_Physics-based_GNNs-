@@ -8,22 +8,24 @@ project_name = 'Link Prediction with PBGNN'
 
 
 dataset_diz = {
-    'Texas': WebKB(root='/tmp/Texas', name='Texas'),
-    'Cora': Planetoid(root='/tmp/Cora', name='Cora', split='Geom-GCN')
+    'Texas': WebKB(root='/tmp/Texas', name='Texas'), # Texas is solved in Link prediction.
+    'Cora': Planetoid(root='/tmp/Cora', name='Cora', split='Geom-GCN'),
+    'PubMed': Planetoid(root='/tmp/PubMed', name='PubMed', split='Geom-GCN'),
+    'Wisconsin': WebKB(root='/tmp/Wisconsin', name = 'Wisconsin')
 }
 
-
 epochs = 15000
-dataset_name = 'Texas'
+dataset_name = 'Cora'
 dataset = dataset_diz[dataset_name]
 
 batch_size = dataset.x.shape[0]
-lr = 1e-3
-wd = 5e-5
-loss_type = 'nll'
-num_layers = 2
+lr = 0.0026
+wd = 0.0413
+num_layers = 12
 hidden_dim = 64
 step = 0.25
+loss_type = 'nll'
+
 
 hyperparameters = {'batch_size': batch_size,
                    'learning rate': lr,

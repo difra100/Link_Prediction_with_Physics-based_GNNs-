@@ -4,7 +4,7 @@ import torch.nn.utils.parametrize as parametrize
 import torch.nn as nn
 
 import torch_geometric
-from torch_geometric.nn import MessagePassing
+from torch_geometric.nn import MessagePassing, GCNConv
 from torch_geometric.utils import add_self_loops, degree, homophily
 from torch_geometric.utils import negative_sampling
 
@@ -173,76 +173,47 @@ class PhysicsGNN_NC(nn.Module):
     
 
 
-# class LinkPredictor(nn.Module):
-#     def __init__(self, input_dim, output_dim, num_layers = 0, bias = False, dropout= 0, device = 'cpu'):
-#         super().__init__()
-        
-#         self.num_layers = num_layers
-#         layers = []
-#         if self.num_layers != 0:
-            
-#             layers.append(nn.Linear(input_dim, output_dim, bias = bias))
-#             for layer in range(self.num_layers):
-#                 layers.append(nn.Linear(output_dim, output_dim, bias = bias))
-        
-#             layers.append(nn.Linear(output_dim, 1, bias = bias))    
-#         else:
-#             layers.append(nn.Linear(input_dim, 1, bias = bias))    
-
-    
-#         self.layers = nn.Sequential(*layers)
-#         self.dropout = dropout
-#         self.to(device)
-#         self.reset_parameters()
-             
-#     def reset_parameters(self):
-#         for layer in self.layers:
-#             layer.reset_parameters()
-            
-#     def forward(self, x_i, x_j, training = False):
-        
-#         out = x_i * x_j 
-#         if self.num_layers != 0:
-#             for layer_idx in range(len(self.layers)-1):
-#                 out = self.layers[layer_idx](out)
-#                 out = F.relu(out)
-#                 out = F.dropout(out, p = self.dropout, training = training)
-#         out = self.layers[-1](out)
-
-#         out = torch.sigmoid(out)
-
-#         return out
-
-
 
 class LinkPredictor(nn.Module):
-    def __init__(self, in_channels, hidden_channels, out_channels, num_layers,
-                 dropout):
-        super(LinkPredictor, self).__init__()
+    def __init__(self, input_dim, output_dim, num_layers = 0, bias = False, dropout= 0, device = 'cpu'):
+        super().__init__()
+        
+        self.num_layers = num_layers
+        layers = []
+        if self.num_layers != 0:
+            
+            layers.append(nn.Linear(input_dim, output_dim, bias = bias))
+            for layer in range(self.num_layers):
+                layers.append(nn.Linear(output_dim, output_dim, bias = bias))
+        
+            layers.append(nn.Linear(output_dim, 1, bias = bias))    
+        else:
+            layers.append(nn.Linear(input_dim, 1, bias = bias))    
 
-        # Create linear layers
-        self.lins = nn.ModuleList()
-        self.lins.append(nn.Linear(in_channels, hidden_channels))
-        for _ in range(num_layers - 2):
-            self.lins.append(nn.Linear(hidden_channels, hidden_channels))
-        self.lins.append(nn.Linear(hidden_channels, out_channels))
-
+    
+        self.layers = nn.Sequential(*layers)
         self.dropout = dropout
-
+        self.to(device)
+        self.reset_parameters()
+             
     def reset_parameters(self):
-        for lin in self.lins:
-            lin.reset_parameters()
-
+        for layer in self.layers:
+            layer.reset_parameters()
+            
     def forward(self, x_i, x_j, training = False):
-        # x_i and x_j are both of shape (E, D)
-        x = x_i * x_j
-        for lin in self.lins[:-1]:
-            x = lin(x)
-            x = F.relu(x)
-            x = F.dropout(x, p=self.dropout, training=training)
-        x = self.lins[-1](x)
-        return torch.sigmoid(x)
+        
+        out = x_i * x_j 
+        if self.num_layers != 0:
+            for layer_idx in range(len(self.layers)-1):
+                out = self.layers[layer_idx](out)
+                out = F.relu(out)
+                out = F.dropout(out, p = self.dropout, training = training)
+        out = self.layers[-1](out)
 
+        out = torch.sigmoid(out)
+
+        return out
+    
     
 
 class PhysicsGNN_LP(nn.Module):
@@ -286,48 +257,105 @@ class PhysicsGNN_LP(nn.Module):
             x = x + self.step*F.relu(layer(x, edge_index, x0))
 
         return x
-     
+    
+class GNN_LP(nn.Module):
+    def __init__(self, dataset, hidden_dim, num_layers, GNN = GCNConv, self_loops = False, device='cpu'):
+        super().__init__()
 
-class GNNStack(torch.nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_layers, dropout, emb=False):
-        super(GNNStack, self).__init__()
-        conv_model = torch_geometric.nn.SAGEConv
+        self.enc = torch.nn.Linear(
+            dataset.num_features, hidden_dim, bias=False)
 
-        self.convs = nn.ModuleList()
-        self.convs.append(conv_model(input_dim, hidden_dim))
-        self.dropout = dropout
-        self.num_layers = num_layers
-        self.emb = emb
+        layers = [GNN(hidden_dim, hidden_dim, add_self_loops = self_loops) for i in range(num_layers)]
+        
+        self.layers = nn.Sequential(*layers)
+        self.reset_parameters()
+        self.to(device)
 
-        # Create num_layers GraphSAGE convs
-        assert (self.num_layers >= 1), 'Number of layers is not >=1'
-        for l in range(self.num_layers - 1):
-            self.convs.append(conv_model(hidden_dim, hidden_dim))
+    def reset_parameters(self):
+        self.enc.reset_parameters()
+        for layer in self.layers:
+            layer.reset_parameters()
 
-        # post-message-passing processing 
-        self.post_mp = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim), nn.Dropout(self.dropout),
-            nn.Linear(hidden_dim, output_dim))
 
     def forward(self, data):
 
-        x, edge_index = data.x, data.edge_index
+        x, edge_index = data.x.clone(), data.edge_index.clone()
+        
 
-        for i in range(self.num_layers):
-            x = self.convs[i](x, edge_index)
-            x = F.relu(x)
-            x = F.dropout(x, p=self.dropout, training=self.training)
+        x = self.enc(x)
 
-        x = self.post_mp(x)
+        for layer in self.layers:
 
-        # Return final layer of embeddings if specified
-        if self.emb:
-            return x
+            x = x + F.relu(layer(x, edge_index))
 
-        # Else return class probabilities
-        return F.log_softmax(x, dim=1)
+        return x     
+
+# class GNNStack(torch.nn.Module):
+#     def __init__(self, input_dim, hidden_dim, output_dim, num_layers, dropout, emb=False):
+#         super(GNNStack, self).__init__()
+#         conv_model = torch_geometric.nn.SAGEConv
+
+#         self.convs = nn.ModuleList()
+#         self.convs.append(conv_model(input_dim, hidden_dim))
+#         self.dropout = dropout
+#         self.num_layers = num_layers
+#         self.emb = emb
+
+#         # Create num_layers GraphSAGE convs
+#         assert (self.num_layers >= 1), 'Number of layers is not >=1'
+#         for l in range(self.num_layers - 1):
+#             self.convs.append(conv_model(hidden_dim, hidden_dim))
+
+#         # post-message-passing processing 
+#         self.post_mp = nn.Sequential(
+#             nn.Linear(hidden_dim, hidden_dim), nn.Dropout(self.dropout),
+#             nn.Linear(hidden_dim, output_dim))
+
+#     def forward(self, data):
+
+#         x, edge_index = data.x, data.edge_index
+
+#         for i in range(self.num_layers):
+#             x = self.convs[i](x, edge_index)
+#             x = F.relu(x)
+#             x = F.dropout(x, p=self.dropout, training=self.training)
+
+#         x = self.post_mp(x)
+
+#         # Return final layer of embeddings if specified
+#         if self.emb:
+#             return x
+
+#         # Else return class probabilities
+#         return F.log_softmax(x, dim=1)
 
             
-    
+# class LinkPredictor(nn.Module):
+#     def __init__(self, in_channels, hidden_channels, out_channels, num_layers,
+#                  dropout):
+#         super(LinkPredictor, self).__init__()
+
+#         # Create linear layers
+#         self.lins = nn.ModuleList()
+#         self.lins.append(nn.Linear(in_channels, hidden_channels))
+#         for _ in range(num_layers - 2):
+#             self.lins.append(nn.Linear(hidden_channels, hidden_channels))
+#         self.lins.append(nn.Linear(hidden_channels, out_channels))
+
+#         self.dropout = dropout
+
+#     def reset_parameters(self):
+#         for lin in self.lins:
+#             lin.reset_parameters()
+
+#     def forward(self, x_i, x_j, training = False):
+#         # x_i and x_j are both of shape (E, D)
+#         x = x_i * x_j
+#         for lin in self.lins[:-1]:
+#             x = lin(x)
+#             x = F.relu(x)
+#             x = F.dropout(x, p=self.dropout, training=training)
+#         x = self.lins[-1](x)
+#         return torch.sigmoid(x)
         
         

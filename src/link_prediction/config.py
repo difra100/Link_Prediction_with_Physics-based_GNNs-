@@ -4,31 +4,46 @@ from torch_geometric.datasets import WebKB, Planetoid, WikipediaNetwork
 print("Link prediction features initialized.....")
 
 
-wb = True
+wb = False
 project_name = 'Link Prediction with PBGNN'
 
 
 dataset_diz = {
     'Texas': WebKB(root='/tmp/Texas', name='Texas'), # Texas is solved in Link prediction.
-    'Cora': Planetoid(root='/tmp/Cora', name='Cora', split='Geom-GCN')
+    'Cora': Planetoid(root='/tmp/Cora', name='Cora', split='Geom-GCN'),
+    'PubMed': Planetoid(root='/tmp/PubMed', name='PubMed', split='Geom-GCN'),
+    'Wisconsin': WebKB(root='/tmp/Wisconsin', name = 'Wisconsin')
 }
 
 
 epochs = 5000
-dataset_name = 'Texas'
+dataset_name = 'PubMed'
 dataset = dataset_diz[dataset_name]
 
 
 batch_size = dataset.x.shape[0]
-lr = 3e-3
-wd = 0
-num_layers = 2
-hidden_dim = 256
-step = 0.1
+lr = 0.0039
+wd = 0.0003
+num_layers = 5
+hidden_dim = 64
+step = 0.5
 output_dim = 32
-mlp_layer = 0
-link_bias = False
-dropout = 0.3
+mlp_layer = 2
+link_bias = True
+dropout = 0.42
+# GRAFF ~ 0.86
+
+# Cora Dataset: GRAFF
+# lr = 0.01           
+# wd = 0.001
+# num_layers = 2
+# hidden_dim = 128
+# step = 0.1
+# output_dim = 32
+# mlp_layer = 0
+# link_bias = True
+# dropout = 0.2
+# GRAFF ~ 0.86
 
 hyperparameters = {'batch_size': batch_size,
                    'learning rate': lr,
@@ -42,6 +57,8 @@ hyperparameters = {'batch_size': batch_size,
                    'ODE step': step,
                    'Dataset': dataset_name}
 
+
+# Set sweep = True in the notebook when is required to do the hyperparameter tuning with sweep #
 sweep_config = {
     'method': 'random'
 }
