@@ -17,20 +17,20 @@ dataset_diz = {
 
 
 epochs = 5000
-dataset_name = 'PubMed'
+dataset_name = 'Wisconsin'
 dataset = dataset_diz[dataset_name]
 
 
 batch_size = dataset.x.shape[0]
-lr = 0.0039
-wd = 0.0003
-num_layers = 5
+lr = 0.0001
+wd = 0.0001
+num_layers = 2
 hidden_dim = 64
 step = 0.5
 output_dim = 32
-mlp_layer = 2
+mlp_layer = 0
 link_bias = True
-dropout = 0.42
+dropout = 0.2
 # GRAFF ~ 0.86
 
 # Cora Dataset: GRAFF
