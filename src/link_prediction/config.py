@@ -3,10 +3,8 @@ from torch_geometric.datasets import WebKB, Planetoid, WikipediaNetwork
 # WebKB: (Texas, Wisconsin, Cornell); Planetoid: (Citeseer, Pubmed, Cora); WikipediaNetwork: (Squirrel, Chameleon)
 print("Link prediction features initialized.....")
 
-
 wb = False
 project_name = 'Link Prediction with PBGNN'
-
 
 dataset_diz = {
     'Texas': WebKB(root='/tmp/Texas', name='Texas'), # Texas is solved in Link prediction.
@@ -17,18 +15,17 @@ dataset_diz = {
 
 
 epochs = 5000
-dataset_name = 'Wisconsin'
+dataset_name = 'Cora'
 dataset = dataset_diz[dataset_name]
-
 
 batch_size = dataset.x.shape[0]
 lr = 0.0001
 wd = 0.0001
-num_layers = 2
-hidden_dim = 64
-step = 0.5
+num_layers = 12
+hidden_dim = 32
+step = 0.25
 output_dim = 32
-mlp_layer = 0
+mlp_layer = 2
 link_bias = True
 dropout = 0.2
 # GRAFF ~ 0.86
