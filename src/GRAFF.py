@@ -217,7 +217,7 @@ class LinkPredictor(nn.Module):
     
 
 class PhysicsGNN_LP(nn.Module):
-    def __init__(self, dataset, hidden_dim, num_layers, step=0.1, symmetry_type='1', self_loops=False, device='cpu'):
+    def __init__(self, dataset, hidden_dim, num_layers, input_dropout, step=0.1, symmetry_type='1', self_loops=False, device='cpu'):
         super().__init__()
 
         self.enc = torch.nn.Linear(
@@ -232,7 +232,7 @@ class PhysicsGNN_LP(nn.Module):
                                  self_loops=self_loops) for i in range(num_layers)]
 
         self.step = step
-        
+        self.drop = torch.nn.Dropout(input_dropout)
         self.reset_parameters()
         self.to(device)
 
@@ -248,10 +248,11 @@ class PhysicsGNN_LP(nn.Module):
         x, edge_index = data.x.clone(), data.edge_index.clone()
         
 
-        x = enc_out = self.enc(x)
+        x = enc_out = self.drop(self.enc(x))
 
         x0 = enc_out.clone()
         
+
         for layer in self.layers:
 
             x = x + self.step*F.relu(layer(x, edge_index, x0))

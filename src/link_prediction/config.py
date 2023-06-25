@@ -15,20 +15,21 @@ dataset_diz = {
 
 
 epochs = 5000
-dataset_name = 'Cora'
+dataset_name = 'PubMed'
 dataset = dataset_diz[dataset_name]
 
 batch_size = dataset.x.shape[0]
-lr = 0.0001
-wd = 0.0001
+lr = 0.01
+wd = 0.001
 num_layers = 12
-hidden_dim = 32
-step = 0.25
-output_dim = 32
+hidden_dim = 64
+step = 0.3
+output_dim = 16
 mlp_layer = 2
-link_bias = True
-dropout = 0.2
-# GRAFF ~ 0.86
+link_bias = False
+dropout = 0
+input_dropout = 0.4
+
 
 # Cora Dataset: GRAFF
 # lr = 0.01           
@@ -48,7 +49,8 @@ hyperparameters = {'batch_size': batch_size,
                    'output_dim': output_dim,
                    'mlp_layers': mlp_layer,
                    'link_bias': link_bias,
-                   'dropout level': dropout,
+                   'decoder dropout': dropout,
+                   'encoder dropout': input_dropout,
                    'N° Hidden layer': num_layers,
                    'Hidden dimension in GRAFF': hidden_dim,
                    'ODE step': step,
@@ -59,7 +61,7 @@ hyperparameters = {'batch_size': batch_size,
 sweep_config = {
     'method': 'random'
 }
-sweep_config['metric'] = {'name': 'HR@100 on test',
+sweep_config['metric'] = {'name': 'AUROC on test',
                           'goal': 'maximize',
                          }
 
@@ -68,27 +70,30 @@ parameters_dict = {
         'values': [1e-2, 1e-3, 1e-4]
     },
     'hidden_dim': {
-        'values': [32, 64, 128, 256]
+        'values': [32, 64]
     },
     'wd': {
         'values': [0, 1e-2, 1e-3, 1e-6]
     },
     'step': {
-        'values': [0.1, 0.2, 0.3]
+        'values': [0.1, 0.2, 0.3, 0.5]
     },
     'num_layers': {
-        'values': [1, 2, 3]
+        'values': [1, 2, 3, 5, 7, 9, 12]
     },
     'output_dim': {
-        'values': [16, 32, 64]
+        'values': [16, 32]
     },
     'mlp_layer': {
-        'values': [0, 1, 2, 3]
+        'values': [0, 1, 2]
     },
     'link_bias': {
        'values': [True, False]
     },
     'dropout': {
+        'values': [0, 0.2, 0.3, 0.4]
+    },
+    'input_dropout': {
         'values': [0, 0.2, 0.3, 0.4]
     }
 }
