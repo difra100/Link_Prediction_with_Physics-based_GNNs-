@@ -99,42 +99,42 @@ sweep_config['metric'] = {'name': 'AUROC on test (Mean)',
                           'goal': 'maximize'
                          }
 
-# parameters_dict = {
-#     'lr': {
-#         'values': [1e-2, 1e-3, 1e-4]
-#     },
-#     'hidden_dim': {
-#         'values': [32, 64, 128, 256]
-#     },
-#     'wd': {
-#         'values': [0, 1e-2, 1e-3, 1e-6]
-#     },
-#     'step': {
-#         'values': [0.1, 0.2, 0.3, 0.5]
-#     },
-#     'num_layers': {
-#         'values': [1, 2, 3, 5, 7, 9, 12]
-#     },
-#     'output_dim': {
-#         'values': [16, 32, 64]
-#     },
-#     'mlp_layer': {
-#         'values': [0, 1, 2]
-#     },
-#     'dropout': {
-#         'values': [0, 0.2, 0.3, 0.4]
-#     },
-#     'input_dropout': {
-#         'values': [0, 0.2, 0.3, 0.4]
-#     }
-# }
-
-
 parameters_dict = {
+    'lr': {
+        'values': [1e-2, 1e-3, 1e-4]
+    },
+    'hidden_dim': {
+        'values': [32, 64, 128, 256]
+    },
+    'wd': {
+        'values': [0, 1e-2, 1e-3, 1e-6]
+    },
+    'step': {
+        'values': [0.1, 0.2, 0.3, 0.5]
+    },
+    'num_layers': {
+        'values': [1, 2, 3, 5, 7, 9, 12]
+    },
+    'output_dim': {
+        'values': [16, 32, 64]
+    },
     'mlp_layer': {
-        'values': [0, 1, 2, 3, 4]
+        'values': [0, 1, 2]
+    },
+    'dropout': {
+        'values': [0, 0.2, 0.3, 0.4]
+    },
+    'input_dropout': {
+        'values': [0, 0.2, 0.3, 0.4]
     }
 }
+
+
+# parameters_dict = {
+#     'mlp_layer': {
+#         'values': [0, 1, 2, 3, 4]
+#     }
+# }
 
 
 
