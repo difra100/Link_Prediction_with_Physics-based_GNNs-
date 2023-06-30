@@ -53,6 +53,7 @@ batch_size = dataset.x.shape[0]
 # TEXAS ROBUST AUROC
 # learning rate and number of layers are determining
 # as in Wisconsin
+# lunar_sweep
 lr = 0.001
 wd = 0.000001
 num_layers = 1
